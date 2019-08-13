@@ -9,6 +9,7 @@ namespace ProjetoChatProgramDistrubuida
 {
     class Program
     {
+        static model.Config configuracao;
         static void OnUdpData(IAsyncResult result)
         {
             // this is what had been passed into BeginReceive as the second parameter:
@@ -37,7 +38,7 @@ namespace ProjetoChatProgramDistrubuida
                                                     // schedule the first receive operation:
             socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
             // sending data (for the sake of simplicity, back to ourselves):
-            IPEndPoint target = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5394);
+            IPEndPoint target = new IPEndPoint(IPAddress.Parse(configuracao.IP), configuracao.Port);
 
             // send a couple of sample messages:
             byte[] message = Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(mensagem));
@@ -52,19 +53,24 @@ namespace ProjetoChatProgramDistrubuida
 
             Console.ReadKey();
         }
-        static readonly string textFile = "/config/config.json";
+        static readonly string textFile = @"config/config.json";
 
 
         static void Main(string[] args){
 
-            Console.WriteLine(Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory));
-            String caminhoArquivo = Path.GetDirectoryName(System.AppDomain.CurrentDomain.BaseDirectory) + textFile;
+            String caminhoArquivo = textFile;
             if (File.Exists(caminhoArquivo)){
                 // Read entire text file content in one string  
-                string text = File.ReadAllText(caminhoArquivo);
-                Console.WriteLine(text);
-            }
 
+                configuracao = JsonConvert.DeserializeObject<model.Config>(File.ReadAllText(caminhoArquivo));
+
+                model.Mensagem mensagem = new model.Mensagem();
+                mensagem.Message = "ola mundo";
+
+                OutUdpData(mensagem);
+
+                Console.ReadKey();
+            }
         }
     }
 }
