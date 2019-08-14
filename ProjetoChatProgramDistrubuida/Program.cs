@@ -7,11 +7,11 @@ using System.Text;
 
 namespace ProjetoChatProgramDistrubuida
 {
-    class Program
-    {
+    class Program {
         static model.Config configuracao;
-        static void OnUdpData(IAsyncResult result)
-        {
+        static UdpClient socket;
+
+        static void OnUdpData(IAsyncResult result) {
             // this is what had been passed into BeginReceive as the second parameter:
             UdpClient socket = result.AsyncState as UdpClient;
             // points towards whoever had sent the message:
@@ -20,22 +20,18 @@ namespace ProjetoChatProgramDistrubuida
             byte[] message = socket.EndReceive(result, ref source);
             // do what you'd like with `message` here:
             Console.WriteLine("Got " + message.Length + " bytes from " + source);
-            Console.WriteLine(System.Text.Encoding.ASCII.GetString(message));
 
             String json = System.Text.Encoding.ASCII.GetString(message);
 
-            model.Mensagem modeloPro = JsonConvert.DeserializeObject<model.Mensagem>(json);
-            Console.WriteLine(modeloPro.Message);
+            model.Mensagem MensagemRecebida = JsonConvert.DeserializeObject<model.Mensagem>(json);
+            Console.WriteLine(MensagemRecebida);
             
-                // schedule the next receive operation once reading is done:
             socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
         }
 
+        static void OutUdpData( model.Mensagem mensagem) {
+            socket.Client.SetSocketOption( SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
 
-        static void OutUdpData( model.Mensagem mensagem)
-        {
-            UdpClient socket = new UdpClient(5394); // `new UdpClient()` to auto-pick port
-                                                    // schedule the first receive operation:
             socket.BeginReceive(new AsyncCallback(OnUdpData), socket);
             // sending data (for the sake of simplicity, back to ourselves):
             IPEndPoint target = new IPEndPoint(IPAddress.Parse(configuracao.IP), configuracao.Port);
@@ -45,31 +41,24 @@ namespace ProjetoChatProgramDistrubuida
             socket.Send(message, message.Length, target);
         }
 
-        static void EnviarMensagem(){
-            model.Mensagem mensagem = new model.Mensagem();
-            mensagem.Message = "ola mundo";
-
-            OutUdpData(mensagem);
-
-            Console.ReadKey();
-        }
         static readonly string textFile = @"config/config.json";
-
-
         static void Main(string[] args){
 
             String caminhoArquivo = textFile;
             if (File.Exists(caminhoArquivo)){
+
                 // Read entire text file content in one string  
 
                 configuracao = JsonConvert.DeserializeObject<model.Config>(File.ReadAllText(caminhoArquivo));
 
-                model.Mensagem mensagem = new model.Mensagem();
-                mensagem.Message = "ola mundo";
-
-                OutUdpData(mensagem);
-
-                Console.ReadKey();
+                socket = new UdpClient(configuracao.Port);
+                while (true){
+                    model.Mensagem mensagem = new model.Mensagem();
+                    Console.WriteLine("Escreva uma mensagem");
+                    mensagem.Message = Console.ReadLine();
+                    OutUdpData(mensagem);
+                    Console.WriteLine("");
+                }
             }
         }
     }

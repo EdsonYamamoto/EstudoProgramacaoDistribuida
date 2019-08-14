@@ -12,5 +12,10 @@ namespace ProjetoChatProgramDistrubuida.model
         {
             this.Data = DateTime.Now;
         }
+
+        public override string ToString()
+        {
+            return "Data: "+ Data.ToString() + "\t Mensagem:" + Message ;
+        }
     }
 }
