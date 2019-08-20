@@ -20,9 +20,10 @@ namespace ProjetoChatProgramDistrubuida
             Console.WriteLine("Got " + message.Length + " bytes from " + source);
 
             String json = Encoding.ASCII.GetString(message);
+            Console.WriteLine(json);
 
-            model.Mensagem MensagemRecebida = JsonConvert.DeserializeObject<model.Mensagem>(json);
-            Console.WriteLine(MensagemRecebida);
+            //model.Mensagem MensagemRecebida = JsonConvert.DeserializeObject<model.Mensagem>(json);
+            //Console.WriteLine(MensagemRecebida);
 
             using (StreamWriter sw = File.AppendText(logPath))
                 sw.WriteLine("RECEIVED>>> "+ json);
@@ -70,6 +71,7 @@ namespace ProjetoChatProgramDistrubuida
                     mensagem.Message = Console.ReadLine();
                     OutUdpData(mensagem);
                     Console.WriteLine("");
+
                 }
             }
 
