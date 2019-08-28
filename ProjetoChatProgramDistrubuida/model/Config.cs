@@ -8,5 +8,6 @@ namespace ProjetoChatProgramDistrubuida.model
     {
         public String IP;
         public int Port;
+        public int PortReceiver;
     }
 }
