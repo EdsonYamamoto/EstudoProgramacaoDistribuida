@@ -17,9 +17,11 @@ namespace ProjetoChatProgramDistrubuida
 
         static readonly string textFile = @"config/config.json";
         static readonly string logPath = @"log.txt";
+        static readonly string heartbeatReq = "Heartbeat Request";
+        static readonly string heartbeatRep = "Heartbeat Reply";
 
         static void Main(string[] args) {
-            listaIP.Add("172.17.115.26");
+            listaIP.Add("192.168.0.26");
 
             if (!File.Exists(logPath))
             {
@@ -37,13 +39,11 @@ namespace ProjetoChatProgramDistrubuida
                 socket = new UdpClient(configuracao.Port);
                 while (true) {
                     OutUdpData();
-                    Console.WriteLine("");
                     Thread.Sleep(10000);
+                    Console.WriteLine("");
                 }
             }
-
         }
-
 
         static void OutUdpData()
         {
@@ -52,9 +52,9 @@ namespace ProjetoChatProgramDistrubuida
             foreach(string IP in listaIP){
                 IPEndPoint target = new IPEndPoint(IPAddress.Parse(IP), configuracao.Port);
 
-                byte[] message = Encoding.ASCII.GetBytes("Heartbeat Request");
+                byte[] message = Encoding.ASCII.GetBytes(heartbeatReq);
                 socket.Send(message, message.Length, target);
-
+                Console.WriteLine("send>[" + IP + ":" + configuracao.Port.ToString() + "]:"+ heartbeatReq );
             }
         }
 
@@ -64,17 +64,18 @@ namespace ProjetoChatProgramDistrubuida
             IPEndPoint source = new IPEndPoint(IPAddress.Any, configuracao.PortReceiver);
             byte[] message = socket.EndReceive(result, ref source);
 
-            Console.WriteLine("Got " + message.Length + " bytes from " + source);
-
-            String json = Encoding.ASCII.GetString(message);
-            Console.WriteLine(json);
-
+            String response = Encoding.ASCII.GetString(message);
+            Console.WriteLine("rece<[" + source.Address.ToString() + ":" + configuracao.PortReceiver.ToString()+ "]:" +response);
 
             socket.BeginReceive(new AsyncCallback(OnUdpDataV2), socket);
-            Console.WriteLine(source.Address.ToString());
-            IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), configuracao.Port);
-            byte[] messageReply = Encoding.ASCII.GetBytes("Heartbeat Reply");
-            socket.Send(messageReply, messageReply.Length, target);
+
+            if(response.CompareTo(heartbeatReq) == 0) {
+                IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), configuracao.Port);
+                byte[] messageReply = Encoding.ASCII.GetBytes(heartbeatRep);
+                socket.Send(messageReply, messageReply.Length, target);
+
+                Console.WriteLine("send>[" + source.Address.ToString() +":"+ configuracao.Port.ToString() + "]:" + heartbeatRep);
+            }
         }
     }
 }
