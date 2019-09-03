@@ -30,22 +30,17 @@ namespace ProjetoChatProgramDistrubuida
             listaIP.Add("172.18.3.129");
             listaIP.Add("172.18.3.124");
             listaIP.Add("172.18.3.97");
-            //listaIP.Add("172.18.3.137");
             listaIP.Add("172.18.3.115");
             listaIP.Add("172.18.0.108");
-
-            //listaIP.Add("172.17.112.71");
+            listaIP.Add("172.18.0.84");
 
             if (!File.Exists(logPath))
             {
-                // Create a file to write to.
                 using (StreamWriter sw = File.CreateText(logPath))
                     sw.WriteLine(DateTime.Now);
             }
             String caminhoArquivo = textFile;
             if (File.Exists(caminhoArquivo)){
-
-                // Read entire text file content in one string  
 
                 configuracao = JsonConvert.DeserializeObject<model.Config>(File.ReadAllText(caminhoArquivo));
 
@@ -63,6 +58,7 @@ namespace ProjetoChatProgramDistrubuida
                 }
             }
         }
+
         static void Receiver()
         {
             socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
