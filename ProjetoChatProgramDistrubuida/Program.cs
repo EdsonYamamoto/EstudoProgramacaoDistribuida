@@ -21,7 +21,20 @@ namespace ProjetoChatProgramDistrubuida
         static readonly string heartbeatRep = "Heartbeat Reply";
 
         static void Main(string[] args) {
-            listaIP.Add("192.168.0.26");
+            listaIP.Add("172.18.108.71");
+            listaIP.Add("172.17.104.247");
+            listaIP.Add("172.18.0.99");
+            listaIP.Add("172.18.3.68");
+            listaIP.Add("172.18.3.72");
+            listaIP.Add("172.18.3.69");
+            listaIP.Add("172.18.3.129");
+            listaIP.Add("172.18.3.124");
+            listaIP.Add("172.18.3.97");
+            //listaIP.Add("172.18.3.137");
+            listaIP.Add("172.18.3.115");
+            listaIP.Add("172.18.0.108");
+
+            //listaIP.Add("172.17.112.71");
 
             if (!File.Exists(logPath))
             {
@@ -37,18 +50,27 @@ namespace ProjetoChatProgramDistrubuida
                 configuracao = JsonConvert.DeserializeObject<model.Config>(File.ReadAllText(caminhoArquivo));
 
                 socket = new UdpClient(configuracao.Port);
-                while (true) {
-                    OutUdpData();
-                    Thread.Sleep(10000);
+                while (true)
+                {
+                    Thread receiver = new Thread(new ThreadStart(Receiver));
+                    receiver.Start();
+
+                    Thread sender = new Thread(new ThreadStart(OutUdpData));
+                    sender.Start();
+
+                    Thread.Sleep(5000);
                     Console.WriteLine("");
                 }
             }
         }
-
-        static void OutUdpData()
+        static void Receiver()
         {
             socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
             socket.BeginReceive(new AsyncCallback(OnUdpDataV2), socket);
+        }
+
+        static void OutUdpData()
+        {
             foreach(string IP in listaIP){
                 IPEndPoint target = new IPEndPoint(IPAddress.Parse(IP), configuracao.Port);
 
