@@ -23,6 +23,8 @@ namespace ProjetoChatProgramDistrubuida
         static readonly string heartbeatReq = "Heartbeat Request";
         static readonly string heartbeatRep = "Heartbeat Reply";
 
+        public static model.Ip header;
+
         static void Main(string[] args) {
 
             if (File.Exists(ipsFile)) {
@@ -46,7 +48,7 @@ namespace ProjetoChatProgramDistrubuida
                     Thread sender = new Thread(new ThreadStart(OutUdpData));
                     sender.Start();
 
-                    Thread.Sleep(5000);
+                    Thread.Sleep(configuracao.RequestsTimer);
                     Console.WriteLine("");
                 }
             }
