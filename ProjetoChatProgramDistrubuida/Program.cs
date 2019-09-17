@@ -11,38 +11,31 @@ namespace ProjetoChatProgramDistrubuida
 {
     class Program {
         static model.Config configuracao;
+        static model.IPs IPs;
+
         static UdpClient socket;
 
-        public static List<string> listaIP  = new List<string>();
+        //public static List<string> listaIP  = new List<string>();
 
-        static readonly string textFile = @"config/config.json";
+        static readonly string configFile = @"config/config.json";
+        static readonly string ipsFile = @"config/configIPs.json";
         static readonly string logPath = @"log.txt";
         static readonly string heartbeatReq = "Heartbeat Request";
         static readonly string heartbeatRep = "Heartbeat Reply";
 
         static void Main(string[] args) {
-            listaIP.Add("172.18.108.71");
-            listaIP.Add("172.17.104.247");
-            listaIP.Add("172.18.0.99");
-            listaIP.Add("172.18.3.68");
-            listaIP.Add("172.18.3.72");
-            listaIP.Add("172.18.3.69");
-            listaIP.Add("172.18.3.129");
-            listaIP.Add("172.18.3.124");
-            listaIP.Add("172.18.3.97");
-            listaIP.Add("172.18.3.115");
-            listaIP.Add("172.18.0.108");
-            listaIP.Add("172.18.0.84");
 
-            if (!File.Exists(logPath))
-            {
+            if (File.Exists(ipsFile)) {
+                IPs = JsonConvert.DeserializeObject<model.IPs>(File.ReadAllText(ipsFile));
+            }
+
+            if (!File.Exists(logPath)) {
                 using (StreamWriter sw = File.CreateText(logPath))
                     sw.WriteLine(DateTime.Now);
             }
-            String caminhoArquivo = textFile;
-            if (File.Exists(caminhoArquivo)){
 
-                configuracao = JsonConvert.DeserializeObject<model.Config>(File.ReadAllText(caminhoArquivo));
+            if (File.Exists(configFile)){
+                configuracao = JsonConvert.DeserializeObject<model.Config>(File.ReadAllText(configFile));
 
                 socket = new UdpClient(configuracao.Port);
                 while (true)
@@ -67,12 +60,13 @@ namespace ProjetoChatProgramDistrubuida
 
         static void OutUdpData()
         {
-            foreach(string IP in listaIP){
-                IPEndPoint target = new IPEndPoint(IPAddress.Parse(IP), configuracao.Port);
+            foreach(model.Ip ip in IPs.Ips)
+            {
+                IPEndPoint target = new IPEndPoint(IPAddress.Parse(ip.IP), configuracao.Port);
 
                 byte[] message = Encoding.ASCII.GetBytes(heartbeatReq);
                 socket.Send(message, message.Length, target);
-                Console.WriteLine("send>[" + IP + ":" + configuracao.Port.ToString() + "]:"+ heartbeatReq );
+                Console.WriteLine("send>[" + ip.IP + ":" + configuracao.Port.ToString() + "]:"+ heartbeatReq );
             }
         }
 
@@ -87,13 +81,11 @@ namespace ProjetoChatProgramDistrubuida
 
             socket.BeginReceive(new AsyncCallback(OnUdpDataV2), socket);
 
-            if(response.CompareTo(heartbeatReq) == 0) {
-                IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), configuracao.Port);
-                byte[] messageReply = Encoding.ASCII.GetBytes(heartbeatRep);
-                socket.Send(messageReply, messageReply.Length, target);
+            IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), configuracao.Port);
+            byte[] messageReply = Encoding.ASCII.GetBytes(heartbeatRep);
+            socket.Send(messageReply, messageReply.Length, target);
 
-                Console.WriteLine("send>[" + source.Address.ToString() +":"+ configuracao.Port.ToString() + "]:" + heartbeatRep);
-            }
+            Console.WriteLine("send>[" + source.Address.ToString() +":"+ configuracao.Port.ToString() + "]:" + heartbeatRep);
         }
     }
 }
