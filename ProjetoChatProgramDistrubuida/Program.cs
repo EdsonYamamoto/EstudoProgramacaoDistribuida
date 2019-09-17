@@ -10,27 +10,29 @@ using System.Threading;
 namespace ProjetoChatProgramDistrubuida
 {
     class Program {
-        static model.Config configuracao;
-        static model.IPs IPs;
+        public static model.Config configuracao;
+        public static model.IPs IPs;
 
-        static UdpClient socket;
+        public static UdpClient socket;
 
         //public static List<string> listaIP  = new List<string>();
 
         static readonly string configFile = @"config/config.json";
         static readonly string ipsFile = @"config/configIPs.json";
         static readonly string logPath = @"log.txt";
-        static readonly string heartbeatReq = "Heartbeat Request";
-        static readonly string heartbeatRep = "Heartbeat Reply";
+        public static readonly string heartbeatReq = "Heartbeat Request";
+        public static readonly string heartbeatRep = "Heartbeat Reply";
 
         public static model.Ip header;
 
         static void Main(string[] args) {
 
+            // Carrega IP do arquivo de IPs iniciais
             if (File.Exists(ipsFile)) {
                 IPs = JsonConvert.DeserializeObject<model.IPs>(File.ReadAllText(ipsFile));
             }
 
+            // Carrega configurações
             if (!File.Exists(logPath)) {
                 using (StreamWriter sw = File.CreateText(logPath))
                     sw.WriteLine(DateTime.Now);
@@ -42,52 +44,16 @@ namespace ProjetoChatProgramDistrubuida
                 socket = new UdpClient(configuracao.Port);
                 while (true)
                 {
-                    Thread receiver = new Thread(new ThreadStart(Receiver));
+                    Thread receiver = new Thread(new ThreadStart(service.Receiver.Receive));
                     receiver.Start();
 
-                    Thread sender = new Thread(new ThreadStart(OutUdpData));
+                    Thread sender = new Thread(new ThreadStart(service.Sender.Send));// OutUdpData));
                     sender.Start();
 
                     Thread.Sleep(configuracao.RequestsTimer);
                     Console.WriteLine("");
                 }
             }
-        }
-
-        static void Receiver()
-        {
-            socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            socket.BeginReceive(new AsyncCallback(OnUdpDataV2), socket);
-        }
-
-        static void OutUdpData()
-        {
-            foreach(model.Ip ip in IPs.Ips)
-            {
-                IPEndPoint target = new IPEndPoint(IPAddress.Parse(ip.IP), configuracao.Port);
-
-                byte[] message = Encoding.ASCII.GetBytes(heartbeatReq);
-                socket.Send(message, message.Length, target);
-                Console.WriteLine("send>[" + ip.IP + ":" + configuracao.Port.ToString() + "]:"+ heartbeatReq );
-            }
-        }
-
-        static void OnUdpDataV2(IAsyncResult result){
-
-            UdpClient socket = result.AsyncState as UdpClient;
-            IPEndPoint source = new IPEndPoint(IPAddress.Any, configuracao.PortReceiver);
-            byte[] message = socket.EndReceive(result, ref source);
-
-            String response = Encoding.ASCII.GetString(message);
-            Console.WriteLine("rece<[" + source.Address.ToString() + ":" + configuracao.PortReceiver.ToString()+ "]:" +response);
-
-            socket.BeginReceive(new AsyncCallback(OnUdpDataV2), socket);
-
-            IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), configuracao.Port);
-            byte[] messageReply = Encoding.ASCII.GetBytes(heartbeatRep);
-            socket.Send(messageReply, messageReply.Length, target);
-
-            Console.WriteLine("send>[" + source.Address.ToString() +":"+ configuracao.Port.ToString() + "]:" + heartbeatRep);
         }
     }
 }
