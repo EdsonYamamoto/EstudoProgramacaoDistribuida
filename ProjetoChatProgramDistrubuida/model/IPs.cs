@@ -8,10 +8,14 @@ namespace ProjetoChatProgramDistrubuida.model
     {
         public Ip[] Ips;
     }
+
     public class Ip
     {
         public int Prioridade;
         public string IP;
+
+        public int contagemReceived;
+        public int contagemSent;
     }
 
 }

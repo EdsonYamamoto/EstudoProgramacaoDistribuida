@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace ProjetoChatProgramDistrubuida.service
 {
@@ -15,7 +16,7 @@ namespace ProjetoChatProgramDistrubuida.service
 
                 byte[] message = Encoding.ASCII.GetBytes(Program.heartbeatReq);
                 Program.socket.Send(message, message.Length, target);
-                Console.WriteLine("send>[" + ip.IP + ":" + Program.configuracao.Port.ToString() + "]:" + Program.heartbeatReq);
+                Console.WriteLine("send>[" + ip.IP + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.heartbeatReq);
             }
         }
     }

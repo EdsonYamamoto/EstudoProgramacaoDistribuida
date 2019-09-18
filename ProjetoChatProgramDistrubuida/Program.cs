@@ -13,6 +13,8 @@ namespace ProjetoChatProgramDistrubuida
         public static model.Config configuracao;
         public static model.IPs IPs;
 
+        public static model.Ip Lider = new model.Ip();
+
         public static UdpClient socket;
 
         //public static List<string> listaIP  = new List<string>();
@@ -42,16 +44,22 @@ namespace ProjetoChatProgramDistrubuida
                 configuracao = JsonConvert.DeserializeObject<model.Config>(File.ReadAllText(configFile));
 
                 socket = new UdpClient(configuracao.Port);
-                while (true)
-                {
+                while (true) {
+
+                    Thread.Sleep(Program.configuracao.RequestsTimer);
+
                     Thread receiver = new Thread(new ThreadStart(service.Receiver.Receive));
                     receiver.Start();
 
-                    Thread sender = new Thread(new ThreadStart(service.Sender.Send));// OutUdpData));
+                    Thread sender = new Thread(new ThreadStart(service.Sender.Send));
                     sender.Start();
 
-                    Thread.Sleep(configuracao.RequestsTimer);
+                    Thread lider = new Thread(new ThreadStart(service.Geral.ElegeLider));
+                    lider.Start();
+
+                    Console.WriteLine("Lider:"+ Lider.IP);
                     Console.WriteLine("");
+
                 }
             }
         }
