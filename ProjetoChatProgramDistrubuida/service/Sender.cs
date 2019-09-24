@@ -10,13 +10,19 @@ namespace ProjetoChatProgramDistrubuida.service
     {
         public static void Send()
         {
-            foreach (model.Ip ip in Program.IPs.Ips)
+            while (true)
             {
-                IPEndPoint target = new IPEndPoint(IPAddress.Parse(ip.IP), Program.configuracao.Port);
 
-                byte[] message = Encoding.ASCII.GetBytes(Program.heartbeatReq);
-                Program.socket.Send(message, message.Length, target);
-                Console.WriteLine("send>[" + ip.IP + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.heartbeatReq);
+                Thread.Sleep(Program.configuracao.RequestsTimer);
+
+                foreach (model.Ip ip in Program.IPs.Ips)
+                {
+                    IPEndPoint target = new IPEndPoint(IPAddress.Parse(ip.IP), Program.configuracao.Port);
+
+                    byte[] message = Encoding.ASCII.GetBytes(Program.heartbeatReq);
+                    Program.socket.Send(message, message.Length, target);
+                    Console.WriteLine("send>[" + ip.IP + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.heartbeatReq);
+                }
             }
         }
     }

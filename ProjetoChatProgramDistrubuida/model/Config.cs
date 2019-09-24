@@ -9,6 +9,7 @@ namespace ProjetoChatProgramDistrubuida.model
         public int Port;
         public int PortReceiver;
         public int RequestsTimer;
+        public int SenderTimer;
         public int LeaderElection;
     }
 }

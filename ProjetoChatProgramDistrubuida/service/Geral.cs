@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 
 namespace ProjetoChatProgramDistrubuida.service
 {
@@ -8,15 +9,34 @@ namespace ProjetoChatProgramDistrubuida.service
     {
         public static void ElegeLider()
         {
-            model.Ip lider = new model.Ip();
-            foreach(model.Ip ip in Program.IPs.Ips) {
-                if (lider.contagemReceived < ip.contagemReceived)
-                    lider = ip;
+            while (true)
+            {
+                Thread.Sleep(Program.configuracao.LeaderElection);
 
-                ip.contagemReceived = 0;
-                ip.contagemSent = 0;
+                model.Ip lider = new model.Ip();
+                foreach (model.Ip ip in Program.IPs.Ips)
+                {
+                    //if (lider.contagemSent < ip.contagemSent)
+                    //    lider = ip;
+                    if ( ip.contagemSent > 0) {
+                        lider = ip;
+                        break;
+                    }
+                }
+
+
+                foreach (model.Ip ip in Program.IPs.Ips)
+                {
+                    Console.WriteLine(ip.IP + ">Request:" + ip.contagemReceived + " Reply:" + ip.contagemSent);
+                    ip.contagemReceived = 0;
+                    ip.contagemSent = 0;
+                }
+
+                Program.Lider = lider;
+
+                Console.WriteLine("Lider:" + lider.IP);
+                Console.WriteLine("");
             }
-            Program.Lider = lider;
         }
     }
 }

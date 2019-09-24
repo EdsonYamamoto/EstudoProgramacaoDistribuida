@@ -2,67 +2,39 @@
   "Ips": [
     {
       "Prioridade": 0,
-      "IP": "172.18.3.40"
+      "IP": "172.18.2.249"
     },
     {
       "Prioridade": 1,
-      "IP": "172.18.0.99"
+      "IP": "172.18.0.133"
     },
     {
       "Prioridade": 2,
-      "IP": "172.18.0.106"
+      "IP": "172.18.0.38"
     },
     {
       "Prioridade": 3,
-      "IP": "172.18.2.176"
-    },
-    {
-      "Prioridade": 4,
-      "IP": "172.18.0.107"
-    },
-    {
-      "Prioridade": 5,
-      "IP": "172.18.0.108"
-    },
-    {
-      "Prioridade": 6,
-      "IP": "172.18.0.86"
-    },
-    {
-      "Prioridade": 7,
       "IP": "172.18.0.81"
     },
     {
-      "Prioridade": 8,
-      "IP": "172.18.3.25"
-    },
-    {
-      "Prioridade": 9,
+      "Prioridade": 4,
       "IP": "172.18.3.66"
     },
     {
-      "Prioridade": 10,
-      "IP": "172.18.3.60"
+      "Prioridade": 5,
+      "IP": "172.18.0.107"
     },
     {
-      "Prioridade": 11,
-      "IP": "172.18.0.83"
-    },
-    {
-      "Prioridade": 12,
+      "Prioridade": 6,
       "IP": "172.18.3.62"
     },
     {
-      "Prioridade": 13,
-      "IP": "172.18.3.33"
+      "Prioridade": 7,
+      "IP": "172.18.3.40"
     },
     {
-      "Prioridade": 13,
-      "IP": "172.18.3.69"
-    },
-    {
-      "Prioridade": 13,
-      "IP": "192.168.0.26"
+      "Prioridade": 8,
+      "IP": "172.18.3.15"
     }
   ]
 }

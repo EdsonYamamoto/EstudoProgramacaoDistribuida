@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace ProjetoChatProgramDistrubuida.service
 {
@@ -10,8 +11,13 @@ namespace ProjetoChatProgramDistrubuida.service
     {
         public static void Receive()
         {
-            Program.socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            Program.socket.BeginReceive(new AsyncCallback(OnUdpDataV2), Program.socket);
+            while (true)
+            {
+                Thread.Sleep(Program.configuracao.RequestsTimer);
+
+                Program.socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+                Program.socket.BeginReceive(new AsyncCallback(OnUdpDataV2), Program.socket);
+            }
         }
 
         static void OnUdpDataV2(IAsyncResult result)
