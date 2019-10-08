@@ -11,7 +11,6 @@ namespace ProjetoChatProgramDistrubuida.model
 
     public class Ip
     {
-        public int Prioridade;
         public string IP;
 
         public int contagemReceived;

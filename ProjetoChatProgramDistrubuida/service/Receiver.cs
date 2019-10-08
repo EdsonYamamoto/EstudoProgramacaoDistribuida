@@ -29,14 +29,12 @@ namespace ProjetoChatProgramDistrubuida.service
             String response = Encoding.ASCII.GetString(message);
             Console.WriteLine("rece<[" + source.Address.ToString() + ":" + Program.configuracao.PortReceiver.ToString() + "]:\t" + response);
 
-            if (response.CompareTo(Program.heartbeatRep)==0)
+            if (response.ToUpper().CompareTo(Program.heartbeatRep.ToUpper())==0)
                 foreach (model.Ip ip in Program.IPs.Ips)
                     if (ip.IP.CompareTo(source.Address.ToString()) == 0)
                         ip.contagemSent += 1;
 
-            if (response.CompareTo(Program.heartbeatReq) == 0)
-            {
-                socket.BeginReceive(new AsyncCallback(OnUdpDataV2), socket);
+            if (response.ToUpper().CompareTo(Program.heartbeatReq.ToUpper()) == 0){
 
                 IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), Program.configuracao.Port);
                 byte[] messageReply = Encoding.ASCII.GetBytes(Program.heartbeatRep);

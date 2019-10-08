@@ -14,23 +14,25 @@ namespace ProjetoChatProgramDistrubuida.service
                 Thread.Sleep(Program.configuracao.LeaderElection);
 
                 model.Ip lider = new model.Ip();
+
+                bool eleicaoFeita = false;
+
+                Console.WriteLine("*****************************************************");
                 foreach (model.Ip ip in Program.IPs.Ips)
                 {
                     //if (lider.contagemSent < ip.contagemSent)
                     //    lider = ip;
-                    if ( ip.contagemSent > 0) {
+                    if ( ip.contagemSent > 0 && !eleicaoFeita ) {
                         lider = ip;
-                        break;
+                        eleicaoFeita = true;
+                        //break;
                     }
-                }
-
-
-                foreach (model.Ip ip in Program.IPs.Ips)
-                {
                     Console.WriteLine(ip.IP + ">Request:" + ip.contagemReceived + " Reply:" + ip.contagemSent);
+
                     ip.contagemReceived = 0;
                     ip.contagemSent = 0;
                 }
+                Console.WriteLine("*****************************************************");
 
                 Program.Lider = lider;
 

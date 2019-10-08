@@ -3,6 +3,6 @@
   "PortReceiver": 61000,
 
   "RequestsTimer": 1000,
-  "SenderTimer": 1000,
+  "SenderTimer": 2,
   "LeaderElection": 5000
 }
