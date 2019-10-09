@@ -20,17 +20,14 @@ namespace ProjetoChatProgramDistrubuida.service
                 Console.WriteLine("*****************************************************");
                 foreach (model.Ip ip in Program.IPs.Ips)
                 {
-                    //if (lider.contagemSent < ip.contagemSent)
-                    //    lider = ip;
-                    if ( ip.contagemSent > 0 && !eleicaoFeita ) {
+                    if ( ip.contagemReply > 0 && !eleicaoFeita ) {
                         lider = ip;
                         eleicaoFeita = true;
-                        //break;
                     }
-                    Console.WriteLine(ip.IP + ">Request:" + ip.contagemReceived + " Reply:" + ip.contagemSent);
+                    Console.WriteLine(ip.IP + ">Request:" + ip.contagemRequest + " Reply:" + ip.contagemReply);
 
-                    ip.contagemReceived = 0;
-                    ip.contagemSent = 0;
+                    ip.contagemReply = 0;
+                    ip.contagemRequest = 0;
                 }
                 Console.WriteLine("*****************************************************");
 

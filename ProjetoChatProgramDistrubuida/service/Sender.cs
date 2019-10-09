@@ -13,7 +13,7 @@ namespace ProjetoChatProgramDistrubuida.service
             while (true)
             {
 
-                Thread.Sleep(Program.configuracao.RequestsTimer);
+                Thread.Sleep(Program.configuracao.BroadCastSenderTimer);
 
                 foreach (model.Ip ip in Program.IPs.Ips)
                 {

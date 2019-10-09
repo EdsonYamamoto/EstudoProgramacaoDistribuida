@@ -13,7 +13,7 @@ namespace ProjetoChatProgramDistrubuida.service
         {
             while (true)
             {
-                Thread.Sleep(Program.configuracao.RequestsTimer);
+                Thread.Sleep(Program.configuracao.ReceiverTimer);
 
                 Program.socket.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 Program.socket.BeginReceive(new AsyncCallback(OnUdpDataV2), Program.socket);
@@ -27,25 +27,32 @@ namespace ProjetoChatProgramDistrubuida.service
             byte[] message = socket.EndReceive(result, ref source);
 
             String response = Encoding.ASCII.GetString(message);
-            Console.WriteLine("rece<[" + source.Address.ToString() + ":" + Program.configuracao.PortReceiver.ToString() + "]:\t" + response);
 
-            if (response.ToUpper().CompareTo(Program.heartbeatRep.ToUpper())==0)
+            if (response.ToUpper().CompareTo(Program.heartbeatRep.ToUpper()) == 0)
                 foreach (model.Ip ip in Program.IPs.Ips)
+                {
                     if (ip.IP.CompareTo(source.Address.ToString()) == 0)
-                        ip.contagemSent += 1;
+                    {
+                        ip.contagemReply += 1;
 
-            if (response.ToUpper().CompareTo(Program.heartbeatReq.ToUpper()) == 0){
+                        Console.WriteLine("\trece<<<[" + source.Address.ToString() + ":" + Program.configuracao.PortReceiver.ToString() + "]:\t" + response);
+                    }
+                }
+
+            if (response.ToUpper().CompareTo(Program.heartbeatReq.ToUpper()) == 0) {
 
                 IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), Program.configuracao.Port);
                 byte[] messageReply = Encoding.ASCII.GetBytes(Program.heartbeatRep);
                 socket.Send(messageReply, messageReply.Length, target);
 
                 foreach (model.Ip ip in Program.IPs.Ips)
-                    if (ip.IP.CompareTo(source.Address.ToString()) == 0)
-                        ip.contagemReceived += 1;
+                    if (ip.IP.CompareTo(source.Address.ToString()) == 0) {
+                        ip.contagemRequest += 1;
+                        Console.WriteLine("rece<<<[" + source.Address.ToString() + ":" + Program.configuracao.PortReceiver.ToString() + "]:\t" + response + " Response> "+ Program.heartbeatRep);
+                    }
             }
 
-            Console.WriteLine("send>[" + source.Address.ToString() + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.heartbeatRep);
+            //Console.WriteLine("send>[" + source.Address.ToString() + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.heartbeatRep);
         }
     }
 }

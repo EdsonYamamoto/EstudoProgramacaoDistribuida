@@ -2,7 +2,7 @@
   "Port": 60000,
   "PortReceiver": 61000,
 
-  "RequestsTimer": 1000,
-  "SenderTimer": 2,
+  "ReceiverTimer": 20,
+  "BroadCastSenderTimer": 1000,
   "LeaderElection": 5000
 }

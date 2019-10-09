@@ -13,8 +13,8 @@ namespace ProjetoChatProgramDistrubuida.model
     {
         public string IP;
 
-        public int contagemReceived;
-        public int contagemSent;
+        public int contagemReply;
+        public int contagemRequest;
     }
 
 }
