@@ -8,6 +8,12 @@ namespace ProjetoChatProgramDistrubuida.service
 {
     public class Mineracao
     {
+        public static void Teste()
+        {
+
+        }
+
+
         public static string valor="";
         public static void Send()
         {
