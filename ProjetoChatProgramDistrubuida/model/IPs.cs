@@ -16,5 +16,4 @@ namespace ProjetoChatProgramDistrubuida.model
         public int contagemReply;
         public int contagemRequest;
     }
-
 }

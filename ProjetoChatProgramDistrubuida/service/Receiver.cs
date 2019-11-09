@@ -52,6 +52,28 @@ namespace ProjetoChatProgramDistrubuida.service
                     }
             }
 
+            if (response.ToUpper().CompareTo(Program.processRequest.ToUpper()) == 0)
+            {
+
+                IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), Program.configuracao.Port);
+                byte[] messageReply = null;
+
+                if(Mineracao.Processo())
+                {
+                    messageReply = Encoding.ASCII.GetBytes(Program.processAnswerYes+"["+Mineracao.valor+"]");
+
+                }
+                else
+                {
+                    messageReply = Encoding.ASCII.GetBytes(Program.processAnswerNo);
+
+                }
+
+
+                socket.Send(messageReply, messageReply.Length, target);
+
+            }
+
             //Console.WriteLine("send>[" + source.Address.ToString() + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.heartbeatRep);
         }
     }

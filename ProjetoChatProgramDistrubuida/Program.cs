@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using ProjetoChatProgramDistrubuida.service;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,11 +25,18 @@ namespace ProjetoChatProgramDistrubuida
         static readonly string logPath = @"log.txt";
         public static readonly string heartbeatReq = "Heartbeat Request";
         public static readonly string heartbeatRep = "Heartbeat Reply";
+        public static readonly string processRequest = "ProcessRequest";
+        public static readonly string processAnswerNo = "ProcessAnswerNo";
+        public static readonly string processAnswerYes = "ProcessAnswerYes;";        
+        public static readonly string processInterrupt = "ProcessInterrupt";
+
 
         public static model.Ip header;
 
         static void Main(string[] args) {
+            Hash.Teste();
 
+            /*
             // Carrega IP do arquivo de IPs iniciais
             if (File.Exists(ipsFile)) {
                 IPs = JsonConvert.DeserializeObject<model.IPs>(File.ReadAllText(ipsFile));
@@ -53,6 +61,7 @@ namespace ProjetoChatProgramDistrubuida
                 Thread lider = new Thread(new ThreadStart(service.Geral.ElegeLider));
                 lider.Start();
             }
+            */
         }
     }
 }
