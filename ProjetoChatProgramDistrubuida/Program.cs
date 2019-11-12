@@ -34,9 +34,9 @@ namespace ProjetoChatProgramDistrubuida
         public static model.Ip header;
 
         static void Main(string[] args) {
-            //Hash.Teste();
+            Hash.Teste();
 
-            
+            /*
             // Carrega IP do arquivo de IPs iniciais
             if (File.Exists(ipsFile)) {
                 IPs = JsonConvert.DeserializeObject<model.IPs>(File.ReadAllText(ipsFile));
@@ -64,7 +64,7 @@ namespace ProjetoChatProgramDistrubuida
                 Thread mineracao = new Thread(new ThreadStart(service.Mineracao.Send));
                 mineracao.Start();
             }
-            
+            */
         }
     }
 }

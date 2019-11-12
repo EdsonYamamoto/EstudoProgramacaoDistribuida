@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Security.Cryptography;
+using ProjetoChatProgramDistrubuida.model;
+using System.Text.RegularExpressions;
 
 namespace ProjetoChatProgramDistrubuida.service
 {
@@ -10,64 +12,25 @@ namespace ProjetoChatProgramDistrubuida.service
 
         public static void Teste()
         {
-            /*
-            string version = "02000000";
-            string previousBlock = "975b9717f7d18ec1f2ad55e2559b5997b8da0e3317c803780000000100000000";
-            string merkleRoot = "0000000000000000e067a478024addfecdc93628978aa52d91fabd4292982a501234569876 ";
+            Bloco b = new Bloco();
+            b.hashAnterior = "00000004fa2ebde0680a0434362269685583b246878644b1e6075b4f69f1d5db";
+            b.qtdZ = 6;
 
-            string timestamp = "9876";
-            string bits = "535f0119";
-            string nonce = "123456";
-            string transactionCounta = "63";
-            */
+            Regex regex = new Regex("^[0]+$");
 
-            string resposta = "68763dc34ed271a0d738c22592a2d4e8f38f9d477aa4d7951c7cf933835e190e";
-            string job_id = "58af8d8c";
-            string prevhash = "975b9717f7d18ec1f2ad55e2559b5997b8da0e3317c803780000000100000000";
-            string coinb1 = "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff4803636004062f503253482f04428b055308";
-            string coinb2 = "2e522cfabe6d6da0bd01f57abe963d25879583eea5ea6f08f83e3327eba9806b14119718cbb1cf04000000000000000000000001fb673495000000001976a91480ad90d403581fa3bf46086a91b2d9d4125db6c188ac00000000";
-            string merkle_branch = "['ea9da84d55ebf07f47def6b9b35ab30fc18b6e980fc618f262724388f2e9c591', ...]";
-            string version = "00000002";
-            string nbits = "19015f53";
-            string ntime = "53058b41";
-            bool clean_jobs = false;
-            /*
-            while (nonce < 0x100000000)
+            for (int timestamp = 1; timestamp < 2000000000; timestamp++)
             {
-                header = ( struct.pack("<L", ver) + prev_block.decode('hex')[::-1] + mrkl_root.decode('hex')[::-1] + struct.pack("<LLL", time_, bits, nonce))
-                hash = hashlib.sha256(hashlib.sha256(header).digest()).digest()
-                print nonce, hash[::- 1].encode('hex')
+                for (int nonce = 1; nonce < 2000000000; nonce++)
+                {
 
-                if hash[::- 1] < target_str:
-                    print 'success'
-                    break
-                nonce += 1
+                    if (regex.IsMatch(GetHashString((b.hashAnterior + nonce.ToString() + timestamp.ToString())).Substring(0, b.qtdZ)))
+                    {
+                        b.nonce = nonce.ToString();
+                        b.timestamp = timestamp.ToString();
+                        break;
+                    }
+                }
             }
-            */
-
-            /*
-                # https://en.bitcoin.it/wiki/Difficulty
-                exp = bits >> 24
-                mant = bits & 0xffffff
-                target_hexstr = '%064x' % (mant * (1<<(8*(exp - 3))))
-                target_str = target_hexstr.decode('hex')
-
-                nonce = 0
-                while nonce < 0x100000000:
-                header = ( struct.pack("<L", ver) + prev_block.decode('hex')[::-1] +
-                  mrkl_root.decode('hex')[::-1] + struct.pack("<LLL", time_, bits, nonce))
-                hash = hashlib.sha256(hashlib.sha256(header).digest()).digest()
-                print nonce, hash[::-1].encode('hex')
-                if hash[::-1] < target_str:
-                print 'success'
-                break
-                nonce += 1
-
-             */
-
-            Console.WriteLine (GetHashString("ola mundo")  );
-
-            Console.ReadLine();
         }
 
         public static byte[] GetHash(string inputString)
