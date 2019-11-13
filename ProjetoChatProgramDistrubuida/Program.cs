@@ -36,37 +36,6 @@ namespace ProjetoChatProgramDistrubuida
 
         static void Main(string[] args) {
             Hash.Teste();
-
-            Console.WriteLine(html);
-
-
-
-            }
-                html = reader.ReadToEnd();
-            {
-            using (StreamReader reader = new StreamReader(stream))
-            using (Stream stream = response.GetResponseStream())
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-
-            request.AutomaticDecompression = DecompressionMethods.GZip;
-            request = (HttpWebRequest)WebRequest.Create(url);
-            html = string.Empty;
-            url = @"https://mineracao-facens.000webhostapp.com/submit.php?timestamp=&nonce=&poolname=";
-            if (intervalo.Millisecond>1 && intervalo.Millisecond < 2000000000) ;
-
-            DateTime intervalo = DateTime.Now;
-            Console.WriteLine(facens.hash);
-            }
-                facens = JsonConvert.DeserializeObject<model.HashFacens>(reader.ReadToEnd());
-            {
-            using (StreamReader reader = new StreamReader(stream))
-            using (Stream stream = response.GetResponseStream())
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            request.AutomaticDecompression = DecompressionMethods.GZip;
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-            string url = @"https://mineracao-facens.000webhostapp.com/request.php";
-            string html = string.Empty;
-            model.HashFacens facens;
             /*
             // Carrega IP do arquivo de IPs iniciais
             if (File.Exists(ipsFile)) {
