@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
@@ -36,5 +37,6 @@ namespace ProjetoChatProgramDistrubuida.service
 
             return false;
         }
+        
     }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
@@ -34,9 +35,45 @@ namespace ProjetoChatProgramDistrubuida
         public static model.Ip header;
 
         static void Main(string[] args) {
-            //Hash.Teste();
 
+            model.HashFacens facens;
+            string html = string.Empty;
+            string url = @"https://mineracao-facens.000webhostapp.com/request.php";
+
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            request.AutomaticDecompression = DecompressionMethods.GZip;
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                facens = JsonConvert.DeserializeObject<model.HashFacens>(reader.ReadToEnd());
+            }
+
+            Console.WriteLine(facens.hash);
+
+            DateTime intervalo = DateTime.Now;
+
+            if (intervalo.Millisecond>1 && intervalo.Millisecond < 2000000000) ;
+
+            url = @"https://mineracao-facens.000webhostapp.com/submit.php?timestamp=&nonce=&poolname=";
+
+            html = string.Empty;
             
+            request = (HttpWebRequest)WebRequest.Create(url);
+            request.AutomaticDecompression = DecompressionMethods.GZip;
+
+            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
+            using (Stream stream = response.GetResponseStream())
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                html = reader.ReadToEnd();
+            }
+            Console.WriteLine(html);
+
+
+
+            /*
             // Carrega IP do arquivo de IPs iniciais
             if (File.Exists(ipsFile)) {
                 IPs = JsonConvert.DeserializeObject<model.IPs>(File.ReadAllText(ipsFile));
@@ -64,7 +101,7 @@ namespace ProjetoChatProgramDistrubuida
                 Thread mineracao = new Thread(new ThreadStart(service.Mineracao.Send));
                 mineracao.Start();
             }
-            
+            */
         }
     }
 }
