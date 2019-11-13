@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
@@ -8,12 +9,6 @@ namespace ProjetoChatProgramDistrubuida.service
 {
     public class Mineracao
     {
-        public static void Teste()
-        {
-
-        }
-
-
         public static string valor="";
         public static void Send()
         {
@@ -42,5 +37,6 @@ namespace ProjetoChatProgramDistrubuida.service
 
             return false;
         }
+        
     }
 }
