@@ -8,44 +8,77 @@ using System.Net;
 using System.IO;
 using Newtonsoft.Json;
 using RestSharp;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ProjetoChatProgramDistrubuida.service
 {
     class Hash
     {
 
+        private static string path = @"c:\temp\MyTest.txt";
         public static void Teste()
         {
-
-
-            string str = "0000000000000000e067a478024addfecdc93628978aa52d91fabd4292982a501234569876";
-
-            Console.WriteLine(GetHashString(str));
-
-
             Bloco b = new Bloco();
-            //b.hashAnterior = "00000004fa2ebde0680a0434362269685583b246878644b1e6075b4f69f1d5db";
-            //b.qtdZ = 6;
 
-            b.hashAnterior = "00000004fa2ebde0680a0434362269685583b246878644b1e6075b4f69f1d5db";
+            b.hashAnterior = "0000000000000000e067a478024addfecdc93628978aa52d91fabd4292982a50";
             b.qtdZ = 6;
+            b.timestamp = "9876";
+            b.nonce = "123456";
+
+            // This text is added only once to the file.
 
             Regex regex = new Regex("^[0]+$");
 
-            for (int timestamp = 1; timestamp < 2000000000; timestamp++)
+            HashFacens facensHash = facade.FacensWebService.ReqBitcoinsWebService();
+            Console.WriteLine("Hash facens: "+facensHash.hash+", "+facensHash.zeros);
+            Console.WriteLine(GetHashString(facensHash.hash));
+            if (!File.Exists(path))
             {
-                for (int nonce = 1; nonce < 2000000000; nonce++)
+                // Create a file to write to.
+                using (StreamWriter sw = File.CreateText(path))
                 {
-
-                    if (regex.IsMatch(GetHashString((b.hashAnterior + nonce.ToString() + timestamp.ToString())).Substring(0, b.qtdZ)))
-                    {
-                        b.nonce = nonce.ToString();
-                        b.timestamp = timestamp.ToString();
-                        break;
-                    }
+                    sw.WriteLine("Hash:"+facensHash.hash+" Zeros:"+facensHash.zeros);
                 }
             }
-            Console.WriteLine("nonce: "+b.nonce+ " timestamp: "+b.timestamp);
+
+
+            for (int timestamp = 0; timestamp < 20000000; timestamp++)
+            {
+                for (int nonce = 0; nonce < 20000000; nonce++)
+                {
+                    Task.Run(() => MineraHash(facensHash.hash, nonce.ToString(), timestamp.ToString(), Convert.ToInt32(facensHash.zeros)));
+
+                }
+            }
+
+            //Console.WriteLine(facade.FacensWebService.ReqBitcoinsResultWebService(timestamp.ToString(), nonce.ToString()));
+
+            //Console.WriteLine("nonce: "+b.nonce+ " timestamp: "+b.timestamp);
+        }
+
+
+        public static void MineraHash(string hashAnterior, string nonce, string timestamp, int qtdZeros)
+        {
+
+            Regex regex = new Regex("^[0]+$");
+            string hash = GetHashString((hashAnterior + nonce.ToString() + timestamp.ToString()));
+            if (regex.IsMatch(hash.Substring(0, qtdZeros)))
+            {
+                Console.WriteLine(timestamp + " " + nonce);
+                string str = facade.FacensWebService.ReqBitcoinsResultWebService(timestamp, nonce);
+                if (!str.Contains("\r\n"))
+                {
+                    using (StreamWriter sw = File.AppendText(path))
+                    {
+                        sw.WriteLine(" Nonce:" + nonce + " Timestamp:" + timestamp + " Hash256:"+hash+ " -> "+str);
+                    }
+
+                }
+
+            }
+
+            return;
         }
 
         public static byte[] GetHash(string inputString)
