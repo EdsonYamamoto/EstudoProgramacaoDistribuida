@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProjetoChatProgramDistrubuida.service;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,6 +36,8 @@ namespace ProjetoChatProgramDistrubuida
         public static model.Ip header;
 
         static void Main(string[] args) {
+
+            //incomplete, wrong, success
             Hash.Teste();
             /*
             // Carrega IP do arquivo de IPs iniciais

@@ -17,26 +17,18 @@ namespace ProjetoChatProgramDistrubuida.service
         public static void Teste()
         {
 
-            var client = new RestClient("https://mineracao-facens.000webhostapp.com/request.php");
-            // client.Authenticator = new HttpBasicAuthenticator(username, password);
 
-            var request = new RestRequest("resource/{id}", Method.POST);
-            request.AddParameter("name", "value"); // adds to POST or URL querystring based on Method
-            request.AddUrlSegment("id", "123"); // replaces matching token in request.Resource
+            string str = "0000000000000000e067a478024addfecdc93628978aa52d91fabd4292982a501234569876";
 
-            IRestResponse response = client.Execute(request);
-
-            HashFacens facens = JsonConvert.DeserializeObject<model.HashFacens>(response.Content);
-
-            Console.WriteLine(facens.hash);
+            Console.WriteLine(GetHashString(str));
 
 
             Bloco b = new Bloco();
             //b.hashAnterior = "00000004fa2ebde0680a0434362269685583b246878644b1e6075b4f69f1d5db";
             //b.qtdZ = 6;
 
-            b.hashAnterior = facens.hash;
-            b.qtdZ = Convert.ToInt32( facens.zeros );
+            b.hashAnterior = "00000004fa2ebde0680a0434362269685583b246878644b1e6075b4f69f1d5db";
+            b.qtdZ = 6;
 
             Regex regex = new Regex("^[0]+$");
 
@@ -69,6 +61,69 @@ namespace ProjetoChatProgramDistrubuida.service
                 sb.Append(b.ToString("X2"));
 
             return sb.ToString();
+        }
+
+
+        /// <summary>
+        /// Decrypt a string.
+        /// </summary>
+        /// <param name="encryptedText">String to be decrypted</param>
+        /// <param name="password">Password used during encryption</param>
+        /// <exception cref="FormatException"></exception>
+        public static string Decrypt(string encryptedText, string password)
+        {
+            if (encryptedText == null)
+            {
+                return null;
+            }
+
+            if (password == null)
+            {
+                password = String.Empty;
+            }
+
+            // Get the bytes of the string
+            var bytesToBeDecrypted = Convert.FromBase64String(encryptedText);
+            var passwordBytes = Encoding.UTF8.GetBytes(password);
+
+            passwordBytes = SHA256.Create().ComputeHash(passwordBytes);
+
+            var bytesDecrypted = Decrypt(bytesToBeDecrypted, passwordBytes);
+
+            return Encoding.UTF8.GetString(bytesDecrypted);
+        }
+
+        private static byte[] Decrypt(byte[] bytesToBeDecrypted, byte[] passwordBytes)
+        {
+            byte[] decryptedBytes = null;
+
+            // Set your salt here, change it to meet your flavor:
+            // The salt bytes must be at least 8 bytes.
+            var saltBytes = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                using (RijndaelManaged AES = new RijndaelManaged())
+                {
+                    var key = new Rfc2898DeriveBytes(passwordBytes, saltBytes, 1000);
+
+                    AES.KeySize = 256;
+                    AES.BlockSize = 128;
+                    AES.Key = key.GetBytes(AES.KeySize / 8);
+                    AES.IV = key.GetBytes(AES.BlockSize / 8);
+                    AES.Mode = CipherMode.CBC;
+
+                    using (var cs = new CryptoStream(ms, AES.CreateDecryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(bytesToBeDecrypted, 0, bytesToBeDecrypted.Length);
+                        cs.Close();
+                    }
+
+                    decryptedBytes = ms.ToArray();
+                }
+            }
+
+            return decryptedBytes;
         }
     }
 }

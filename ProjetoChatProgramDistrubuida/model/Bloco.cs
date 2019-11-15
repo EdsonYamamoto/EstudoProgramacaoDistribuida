@@ -12,5 +12,9 @@ namespace ProjetoChatProgramDistrubuida.model
         public int qtdZ { get; set; }
         public string hash { get; set; }
 
+        public override string ToString()
+        {
+            return hash+" "+timestamp+" "+nonce+" "+hashAnterior;
+        }
     }
 }
