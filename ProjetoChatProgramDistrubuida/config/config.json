@@ -4,5 +4,6 @@
 
   "ReceiverTimer": 20,
   "BroadCastSenderTimer": 1000,
+  "ProcessRequestTimer": 500,
   "LeaderElection": 5000
 }

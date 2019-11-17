@@ -11,6 +11,7 @@ namespace ProjetoChatProgramDistrubuida.model
 
         public int ReceiverTimer;
         public int BroadCastSenderTimer;
+        public int ProcessRequestTimer;
         public int LeaderElection;
     }
 }
