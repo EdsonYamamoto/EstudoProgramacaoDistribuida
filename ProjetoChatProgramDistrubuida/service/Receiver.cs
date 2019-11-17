@@ -38,15 +38,20 @@ namespace ProjetoChatProgramDistrubuida.service
             if (response.ToUpper().CompareTo(Program.heartbeatReq.ToUpper()) == 0)
                 HeartbeatRequest(socket, source, response);
 
-            if (response.ToUpper().CompareTo(Program.processRequest.ToUpper()) == 0)
-                ProcessRequest(socket, source, response);
+            if (!Mineracao.finalizado){
+                if (response.ToUpper().CompareTo(Program.processRequest.ToUpper()) == 0)
+                    ProcessRequest(socket, source, response);
 
-            if (response.Split(";").Length == 6) 
-                MineraRequest(socket, source, response);
+                if (response.Split(";").Length == 6)
+                    MineraRequest(socket, source, response);
 
-            if (response.Contains(Program.processAnswerNo) || response.Contains(Program.processAnswerYes))
-                RespostaPositivaNegativa(socket, source, response);
+                if (response.Contains(Program.processAnswerYes))
+                    RespostaPositiva(socket, source, response);
 
+                if (response.Contains(Program.processAnswerNo))
+                    RespostaNegativa(socket, source, response);
+
+            }
             Console.WriteLine("");
         }
 
@@ -105,8 +110,18 @@ namespace ProjetoChatProgramDistrubuida.service
 
             IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), Program.configuracao.Port);
             string resp;
-            if (Mineracao.Processo())
-                resp = Program.processAnswerYes + "[" + Mineracao.valor + "]";
+            string[] vetStr = response.Split(";");
+
+            string resposta = Mineracao.Processo(Convert.ToInt32(vetStr[1]), Convert.ToInt32(vetStr[2]), Convert.ToInt32(vetStr[3]), vetStr[4], Convert.ToInt32(vetStr[5]));
+            if (resposta != null) {
+                resp = Program.processAnswerYes + resposta;
+                Console.WriteLine("****************************************************************");
+                Console.WriteLine("****************************************************************");
+                Console.WriteLine("\t\tResponse> nounce:"+ resp);
+                Console.WriteLine("****************************************************************");
+                Console.WriteLine("****************************************************************");
+
+            }
             else
                 resp = Program.processAnswerNo;
 
@@ -121,8 +136,25 @@ namespace ProjetoChatProgramDistrubuida.service
 
 
 
-        private static void RespostaPositivaNegativa(UdpClient socket, IPEndPoint source, string response)
+        private static void RespostaPositiva(UdpClient socket, IPEndPoint source, string response)
         {
+            Mineracao.finalizado = true;
+            foreach (model.Ip ip in Program.IPs.Ips)
+            {
+
+                IPEndPoint target = new IPEndPoint(IPAddress.Parse(ip.IP), Program.configuracao.Port);
+                byte[] messageReply = Encoding.ASCII.GetBytes(Program.processInterrupt);
+                socket.Send(messageReply, messageReply.Length, target);
+
+                Console.WriteLine("\t\tResponse> " + Program.processInterrupt);
+            }
+        }
+
+        private static void RespostaNegativa(UdpClient socket, IPEndPoint source, string response)
+        {
+            Mineracao.timestamp++;
+            Mineracao.contador=0;
+
         }
     }
 }

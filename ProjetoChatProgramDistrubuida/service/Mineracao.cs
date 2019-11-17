@@ -19,30 +19,73 @@ namespace ProjetoChatProgramDistrubuida.service
         public static string valor = "";
 
         public static int incio = 0;
-        public static int fim = 10000;
+        public static int fim = 100000;
         public static int timestamp = 1;
         public static string hash = "0000000000000000e067a478024addfecdc93628978aa52d91fabd4292982a50";
         public static int zeros = 6;
 
+        public static int contador = 0;
+
+        public static bool finalizado = false;
         public static void Send()
         {
             while (true) {
-                
+
                 Thread.Sleep(Program.configuracao.ProcessRequestTimer);
-                if (Program.Lider.IP !=null) {
+                if (Program.Lider.IP != null) {
 
-                    IPEndPoint target = new IPEndPoint(IPAddress.Parse(Program.Lider.IP), Program.configuracao.Port);
+                    if (contador < 1)
+                    {
+                        IPEndPoint target = new IPEndPoint(IPAddress.Parse(Program.Lider.IP), Program.configuracao.Port);
 
-                    byte[] message = Encoding.ASCII.GetBytes(Program.processRequest);
-                    Program.socket.Send(message, message.Length, target);
-                    Console.WriteLine("send>[" + Program.Lider.IP + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.processRequest);
+                        byte[] message = Encoding.ASCII.GetBytes(Program.processRequest);
+                        Program.socket.Send(message, message.Length, target);
+                        Console.WriteLine("send>[" + Program.Lider.IP + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.processRequest);
+                        contador++;
+                    }
                 }
             }
         }
 
+        public static string Processo(int inicio, int fim, int timestamp, string hash, int zeros)
+        {
+            if (!File.Exists(path))
+            {
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.WriteLine("Hash:" + hash + " Zeros:" + zeros);
+                }
+            }
+
+            return MineraHash(hash, timestamp.ToString(), inicio, fim, Convert.ToInt32(zeros));
+        }
+
+
+        public static string MineraHash(string hashAnterior, string timestamp,int inicio, int fim, int qtdZeros)
+        {
+
+            Regex regex = new Regex("^[0]+$");
+
+            for (int nonce = inicio; nonce < fim; nonce++)
+            {
+                string hash = GetHashString((hashAnterior + nonce.ToString() + timestamp.ToString()));
+                if (regex.IsMatch(hash.Substring(0, qtdZeros)))
+                {
+                    Console.WriteLine(timestamp + " " + nonce);
+                    using (StreamWriter sw = File.AppendText(path))
+                    {
+                        sw.WriteLine(" Nonce:" + nonce + " Timestamp:" + timestamp + " Hash256:" + hash + " -> " + hash);
+                    }
+                    return nonce.ToString();
+                }
+            }
+
+
+            return null;
+        }
+        /*
         public static bool Processo()
         {
-            return false;
             Bloco b = new Bloco();
 
             b.hashAnterior = "0000000000000000e067a478024addfecdc93628978aa52d91fabd4292982a50";
@@ -97,7 +140,7 @@ namespace ProjetoChatProgramDistrubuida.service
 
             return;
         }
-
+        */
         public static byte[] GetHash(string inputString)
         {
             HashAlgorithm algorithm = SHA256.Create();
