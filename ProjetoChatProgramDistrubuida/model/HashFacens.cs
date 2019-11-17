@@ -8,5 +8,10 @@ namespace ProjetoChatProgramDistrubuida.model
     {
         public string hash;
         public string zeros;
+
+        public override string ToString()
+        {
+            return "hash: "+hash+" zeros:"+zeros;
+        }
     }
 }
