@@ -36,7 +36,8 @@ namespace ProjetoChatProgramDistrubuida
         public static model.Ip header;
 
         static void Main(string[] args) {
-
+            Mineracao.hashFacens = facade.FacensWebService.ReqBitcoinsWebService();
+            Console.WriteLine(Mineracao.hashFacens);
 
             // Carrega IP do arquivo de IPs iniciais
             if (File.Exists(ipsFile)) {
@@ -56,16 +57,15 @@ namespace ProjetoChatProgramDistrubuida
                 Thread receiver = new Thread(new ThreadStart(service.Receiver.Receive));
                 receiver.Start();
 
-                Thread sender = new Thread(new ThreadStart(service.Sender.Send));
+                Thread sender = new Thread(new ThreadStart(service.Sender.RequestReatbeatSender));
                 sender.Start();
 
                 Thread lider = new Thread(new ThreadStart(service.Geral.ElegeLider));
                 lider.Start();
 
-                Thread mineracao = new Thread(new ThreadStart(service.Mineracao.Send));
+                Thread mineracao = new Thread(new ThreadStart(service.Sender.RequestMineracaoSender));
                 mineracao.Start();
             }
-            
         }
     }
 }

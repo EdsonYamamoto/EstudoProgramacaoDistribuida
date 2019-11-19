@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -38,7 +39,8 @@ namespace ProjetoChatProgramDistrubuida.service
             if (response.ToUpper().CompareTo(Program.heartbeatReq.ToUpper()) == 0)
                 HeartbeatRequest(socket, source, response);
 
-            if (!Mineracao.finalizado){
+            if (!Mineracao.finalizado)
+            {
                 if (response.ToUpper().CompareTo(Program.processRequest.ToUpper()) == 0)
                     ProcessRequest(socket, source, response);
 
@@ -85,15 +87,13 @@ namespace ProjetoChatProgramDistrubuida.service
             }
         }
 
-
-
         private static void ProcessRequest(UdpClient socket, IPEndPoint source, string response)
         {
-
             if (Program.Lider != null)
             {
                 IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), Program.configuracao.Port);
-                string resp = $"Process;{Mineracao.incio};{Mineracao.fim};{Mineracao.timestamp};{Mineracao.hash};{Mineracao.zeros}";
+
+                string resp = $"Process;{Mineracao.incio};{Mineracao.fim};{DateTime.Now.ToString("yyyyMMddHHmmss")};{Mineracao.hashFacens.hash};{Mineracao.hashFacens.zeros}";
 
                 byte[] messageReply = Encoding.ASCII.GetBytes(resp);
 
@@ -102,25 +102,28 @@ namespace ProjetoChatProgramDistrubuida.service
             }
         }
 
-
-
         private static void MineraRequest(UdpClient socket, IPEndPoint source, string response)
         {
-
-
             IPEndPoint target = new IPEndPoint(IPAddress.Parse(source.Address.ToString()), Program.configuracao.Port);
             string resp;
             string[] vetStr = response.Split(";");
 
-            string resposta = Mineracao.Processo(Convert.ToInt32(vetStr[1]), Convert.ToInt32(vetStr[2]), Convert.ToInt32(vetStr[3]), vetStr[4], Convert.ToInt32(vetStr[5]));
-            if (resposta != null) {
-                resp = Program.processAnswerYes + resposta;
+            string resposta = Mineracao.Processo(Convert.ToInt32(vetStr[1]), Convert.ToInt32(vetStr[2]), Convert.ToInt64(vetStr[3]), vetStr[4], Convert.ToInt32(vetStr[5]));
+            if (resposta != null)
+            {
+                resp = resposta;
                 Console.WriteLine("****************************************************************");
                 Console.WriteLine("****************************************************************");
-                Console.WriteLine("\t\tResponse> nounce:"+ resp);
+                Console.WriteLine($"\t\tResponse> {Convert.ToInt64(vetStr[3])} nounce:{resp} hash:{vetStr[4]}" );
                 Console.WriteLine("****************************************************************");
                 Console.WriteLine("****************************************************************");
 
+                using (StreamWriter sw = File.CreateText(@"c:\temp\"+ DateTime.Now.ToString("yyyyMMddHHmmss") + "Resultado.txt"))
+                {
+                    sw.WriteLine($"\t\tResponse> {Convert.ToInt64(vetStr[3])} nounce:{resp} hash:{vetStr[4]}\n{facade.FacensWebService.ReqBitcoinsResultWebService(vetStr[3], resposta)}");
+                }
+
+                resp = Program.processAnswerYes + resposta;
             }
             else
                 resp = Program.processAnswerNo;
@@ -138,7 +141,6 @@ namespace ProjetoChatProgramDistrubuida.service
 
         private static void RespostaPositiva(UdpClient socket, IPEndPoint source, string response)
         {
-            Mineracao.finalizado = true;
             foreach (model.Ip ip in Program.IPs.Ips)
             {
 
@@ -148,12 +150,11 @@ namespace ProjetoChatProgramDistrubuida.service
 
                 Console.WriteLine("\t\tResponse> " + Program.processInterrupt);
             }
+
         }
 
         private static void RespostaNegativa(UdpClient socket, IPEndPoint source, string response)
         {
-            Mineracao.timestamp++;
-            Mineracao.contador=0;
 
         }
     }
