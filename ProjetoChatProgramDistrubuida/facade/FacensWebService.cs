@@ -21,7 +21,7 @@ namespace ProjetoChatProgramDistrubuida.facade
         public static string ReqBitcoinsResultWebService(string timestamp, string nounce)
         {
             var client = new RestClient("https://mineracao-facens.000webhostapp.com/submit.php");
-            var request = new RestRequest("timestamp=" + timestamp + "&nonce=" + nounce + "&poolname=Hall%20of%20Fame", Method.GET);
+            var request = new RestRequest("?timestamp=" + timestamp + "&nonce=" + nounce + "&poolname=Hall%20of%20Fame", Method.GET);
             IRestResponse response = client.Execute(request);
             return response.Content;
         }

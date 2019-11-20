@@ -28,6 +28,7 @@ namespace ProjetoChatProgramDistrubuida.service
 
         public static void RequestMineracaoSender()
         {
+            if (!Mineracao.finalizado)
             while (true)
             {
 

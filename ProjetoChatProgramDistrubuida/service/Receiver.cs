@@ -53,6 +53,10 @@ namespace ProjetoChatProgramDistrubuida.service
                 if (response.Contains(Program.processAnswerNo))
                     RespostaNegativa(socket, source, response);
 
+                if (response.Contains(Program.processInterrupt))
+                    RespostaInterrompeProcesso(socket, source, response);
+                
+
             }
             Console.WriteLine("");
         }
@@ -99,6 +103,14 @@ namespace ProjetoChatProgramDistrubuida.service
 
                 socket.Send(messageReply, messageReply.Length, target);
                 Console.WriteLine("\t\tResponse> " + resp);
+
+                Mineracao.incio = Mineracao.fim;
+                Mineracao.fim += 50000;
+                if (Mineracao.fim >= 20000000)
+                {
+                    Mineracao.incio = 0;
+                    Mineracao.fim = 50000;
+                }
             }
         }
 
@@ -118,9 +130,11 @@ namespace ProjetoChatProgramDistrubuida.service
                 Console.WriteLine("****************************************************************");
                 Console.WriteLine("****************************************************************");
 
-                using (StreamWriter sw = File.CreateText(@"c:\temp\"+ DateTime.Now.ToString("yyyyMMddHHmmss") + "Resultado.txt"))
+                string respostaWEB = facade.FacensWebService.ReqBitcoinsResultWebService(vetStr[3], resposta);
+
+                using (StreamWriter sw = File.CreateText(@"c:\Temp\"+ DateTime.Now.ToString("yyyyMMddHHmmss") + "Resultado.txt"))
                 {
-                    sw.WriteLine($"\t\tResponse> {Convert.ToInt64(vetStr[3])} nounce:{resp} hash:{vetStr[4]}\n{facade.FacensWebService.ReqBitcoinsResultWebService(vetStr[3], resposta)}");
+                    sw.WriteLine($"\t\tResponse> {Convert.ToInt64(vetStr[3])} nounce:{resp} hash:{vetStr[4]}\n{respostaWEB}");
                 }
 
                 resp = Program.processAnswerYes + resposta;
@@ -150,12 +164,17 @@ namespace ProjetoChatProgramDistrubuida.service
 
                 Console.WriteLine("\t\tResponse> " + Program.processInterrupt);
             }
-
         }
 
         private static void RespostaNegativa(UdpClient socket, IPEndPoint source, string response)
         {
 
         }
+
+        private static void RespostaInterrompeProcesso(UdpClient socket, IPEndPoint source, string response)
+        {
+            Mineracao.finalizado = true;
+        }
+        
     }
 }
