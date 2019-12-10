@@ -26,4 +26,6 @@
     </None>
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties config_4configips_1json__JsonSchema="http://json.schemastore.org/cirrus" /></VisualStudio></ProjectExtensions>
+
 </Project>

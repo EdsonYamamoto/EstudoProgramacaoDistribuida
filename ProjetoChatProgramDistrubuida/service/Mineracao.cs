@@ -23,7 +23,7 @@ namespace ProjetoChatProgramDistrubuida.service
         public static HashFacens hashFacens = new HashFacens();
         public static int nonce;
 
-        public static bool finalizado = false;
+        public static bool incializado = true;
 
         public static string Processo(long inicio, long fim, long timestamp, string hash, int zeros)
         {

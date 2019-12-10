@@ -39,25 +39,23 @@ namespace ProjetoChatProgramDistrubuida.service
             if (response.ToUpper().CompareTo(Program.heartbeatReq.ToUpper()) == 0)
                 HeartbeatRequest(socket, source, response);
 
-            if (!Mineracao.finalizado)
-            {
                 if (response.ToUpper().CompareTo(Program.processRequest.ToUpper()) == 0)
                     ProcessRequest(socket, source, response);
 
                 if (response.Split(";").Length == 6)
                     MineraRequest(socket, source, response);
 
-                if (response.Contains(Program.processAnswerYes))
+                if (response.ToUpper().Contains(Program.processAnswerYes.ToUpper()))
                     RespostaPositiva(socket, source, response);
 
-                if (response.Contains(Program.processAnswerNo))
+                if (response.ToUpper().Contains(Program.processAnswerNo.ToUpper()))
                     RespostaNegativa(socket, source, response);
 
-                if (response.Contains(Program.processInterrupt))
+                if (response.ToUpper().Contains(Program.processInterrupt.ToUpper()))
                     RespostaInterrompeProcesso(socket, source, response);
                 
 
-            }
+            
             Console.WriteLine("");
         }
 
@@ -104,13 +102,8 @@ namespace ProjetoChatProgramDistrubuida.service
                 socket.Send(messageReply, messageReply.Length, target);
                 Console.WriteLine("\t\tResponse> " + resp);
 
-                Mineracao.incio = Mineracao.fim;
-                Mineracao.fim += 50000;
-                if (Mineracao.fim >= 20000000)
-                {
-                    Mineracao.incio = 0;
-                    Mineracao.fim = 50000;
-                }
+                Mineracao.incio = 0;
+                Mineracao.fim = 2000000;
             }
         }
 
@@ -132,9 +125,9 @@ namespace ProjetoChatProgramDistrubuida.service
 
                 string respostaWEB = facade.FacensWebService.ReqBitcoinsResultWebService(vetStr[3], resposta);
 
-                using (StreamWriter sw = File.CreateText(@"c:\Temp\"+ DateTime.Now.ToString("yyyyMMddHHmmss") + "Resultado.txt"))
+                using (StreamWriter sw = File.CreateText(@"c:\Temp\"+ source.Address.ToString()+ DateTime.Now.ToString("yyyyMMddHHmmss") + "Resultado.txt"))
                 {
-                    sw.WriteLine($"\t\tResponse> {Convert.ToInt64(vetStr[3])} nounce:{resp} hash:{vetStr[4]}\n{respostaWEB}");
+                    sw.WriteLine($"\t\tResponse> IP:{source.Address.ToString()} {Convert.ToInt64(vetStr[3])} nounce:{resp} hash:{vetStr[4]}\n{respostaWEB}");
                 }
 
                 resp = Program.processAnswerYes + resposta;
@@ -142,16 +135,20 @@ namespace ProjetoChatProgramDistrubuida.service
             else
                 resp = Program.processAnswerNo;
 
-
+            //Console.WriteLine("/////////////////////////////////////////////////////////\nResposta Mineração: "+resposta+ "/////////////////////////////////////////////////////////\n");
             Console.WriteLine("\t\tResponse> " + resp);
 
             byte[] messageReply = Encoding.ASCII.GetBytes(resp);
 
             socket.Send(messageReply, messageReply.Length, target);
 
+
+                IPEndPoint target2 = new IPEndPoint(IPAddress.Parse(Program.Lider.IP), Program.configuracao.Port);
+
+                byte[] message = Encoding.ASCII.GetBytes(Program.processRequest);
+                Program.socket.Send(message, message.Length, target2);
+                Console.WriteLine("send>[" + Program.Lider.IP + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.processRequest);
         }
-
-
 
         private static void RespostaPositiva(UdpClient socket, IPEndPoint source, string response)
         {
@@ -173,7 +170,8 @@ namespace ProjetoChatProgramDistrubuida.service
 
         private static void RespostaInterrompeProcesso(UdpClient socket, IPEndPoint source, string response)
         {
-            Mineracao.finalizado = true;
+            //Mineracao.finalizado = true;
+            Mineracao.hashFacens = facade.FacensWebService.ReqBitcoinsWebService();
         }
         
     }

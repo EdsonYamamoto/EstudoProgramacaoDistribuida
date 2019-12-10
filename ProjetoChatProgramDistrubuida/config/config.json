@@ -3,7 +3,7 @@
   "PortReceiver": 61000,
 
   "ReceiverTimer": 20,
-  "BroadCastSenderTimer": 1000,
-  "ProcessRequestTimer": 200,
+  "BroadCastSenderTimer": 1200,
+  "ProcessRequestTimer": 400,
   "LeaderElection": 5000
 }

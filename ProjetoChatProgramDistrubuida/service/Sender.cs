@@ -28,19 +28,22 @@ namespace ProjetoChatProgramDistrubuida.service
 
         public static void RequestMineracaoSender()
         {
-            if (!Mineracao.finalizado)
             while (true)
             {
 
                 Thread.Sleep(Program.configuracao.ProcessRequestTimer);
                 if (Program.Lider.IP != null)
                 {
-                    IPEndPoint target = new IPEndPoint(IPAddress.Parse(Program.Lider.IP), Program.configuracao.Port);
+                    if (Mineracao.incializado)
+                    {
+                        IPEndPoint target = new IPEndPoint(IPAddress.Parse(Program.Lider.IP), Program.configuracao.Port);
 
-                    byte[] message = Encoding.ASCII.GetBytes(Program.processRequest);
-                    Program.socket.Send(message, message.Length, target);
-                    Console.WriteLine("send>[" + Program.Lider.IP + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.processRequest);
+                        byte[] message = Encoding.ASCII.GetBytes(Program.processRequest);
+                        Program.socket.Send(message, message.Length, target);
+                        Console.WriteLine("send>[" + Program.Lider.IP + ":" + Program.configuracao.Port.ToString() + "]:\t" + Program.processRequest);
 
+                        Mineracao.incializado = false;
+                    }
                 }
             }
         }
